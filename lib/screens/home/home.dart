@@ -13,8 +13,8 @@ import 'package:quicktodo/styles/textstyles/text_styles.dart';
 import 'package:quicktodo/widgets/appbars.dart';
 
 class Home extends HookConsumerWidget {
-  const Home({Key? key}) : super(key: key);
-  final val = 1.0;
+  Home({Key? key}) : super(key: key);
+  double val = 1.0;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final titleController = useTextEditingController();
@@ -67,8 +67,7 @@ class Home extends HookConsumerWidget {
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: () {
-                _startAddNewTransaction(
-                    val,
+                _startAddNewTodo(
                     ref,
                     homeState,
                     colors,
@@ -80,8 +79,9 @@ class Home extends HookConsumerWidget {
                     _titleFocus,
                     _descFocus);
               },
-              child: const Icon(Icons.add),
+              child:  Icon(Icons.add,color: colors.primary),
               backgroundColor: Colors.deepPurple[400],
+              elevation: 5,
             ),
           );
   }
@@ -92,7 +92,7 @@ class Home extends HookConsumerWidget {
         crossAxisCount: 2,
         physics: const ScrollPhysics(),
         shrinkWrap: true,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(5),
         crossAxisSpacing: 20,
         mainAxisSpacing: 10,
         children: [
@@ -121,7 +121,7 @@ class Home extends HookConsumerWidget {
                       Expanded(
                         child: Container(
                             alignment: Alignment.topCenter,
-                            margin: const EdgeInsets.only(top: 40),
+                            margin: const EdgeInsets.only(top: 30),
                             height: double.maxFinite,
                             width: double.maxFinite,
                             decoration: BoxDecoration(
@@ -131,33 +131,32 @@ class Home extends HookConsumerWidget {
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(5.0),
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: Text(
-                                          e.desc,
-                                          style: textStyles.openSansMedium,
-                                        ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Text(
+                                        e.desc,
+                                        style: textStyles.openSansMedium,
                                       ),
                                     ),
-                                    IconButton(
-                                        onPressed: () {
-                                          ref
-                                              .read(homeStateProvider.notifier)
-                                              .deleteTodos(
-                                                  homeState.list.indexOf(e));
-                                        },
-                                        icon: const Icon(
-                                          CupertinoIcons.delete,
-                                          size: 30,
-                                        ))
-                                  ],
-                                ),
+                                  ),
+                                  IconButton(
+                                      padding: const EdgeInsets.all(5),
+                                      alignment: Alignment.bottomRight,
+                                      onPressed: () {
+                                        ref
+                                            .read(homeStateProvider.notifier)
+                                            .deleteTodos(
+                                                homeState.list.indexOf(e));
+                                      },
+                                      icon: const Icon(
+                                        CupertinoIcons.delete,
+                                        size: 30,
+                                      ))
+                                ],
                               ),
                             )),
                       ),
@@ -176,7 +175,7 @@ class Home extends HookConsumerWidget {
                             fontWeight: FontWeight.w600),
                       )),
                   Positioned(
-                    bottom: 20,
+                    bottom: 8,
                     left: 5,
                     right: 5,
                     child: Column(
@@ -185,9 +184,11 @@ class Home extends HookConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(5.0),
+                              padding: const EdgeInsets.only(
+                                  left: 5.0, right: 5.0, bottom: 5),
                               child:
                                   Text(e.duration.toStringAsFixed(0) + ' Sec.',
                                       style: GoogleFonts.orbitron(
@@ -199,6 +200,8 @@ class Home extends HookConsumerWidget {
                                       )),
                             ),
                             IconButton(
+                                padding: const EdgeInsets.all(5),
+                                alignment: Alignment.bottomRight,
                                 onPressed: () {
                                   ref
                                       .read(homeStateProvider.notifier)
@@ -213,16 +216,13 @@ class Home extends HookConsumerWidget {
                                 )),
                           ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              toDo(e, textStyles),
-                              onGoing(e, textStyles),
-                              done(e, textStyles),
-                            ],
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            toDo(e, textStyles),
+                            onGoing(e, textStyles),
+                            done(e, textStyles),
+                          ],
                         )
                       ],
                     ),
@@ -288,25 +288,30 @@ class Home extends HookConsumerWidget {
                               ],
                             ),
                             //openClose Description
-                            
+                            if (homeState.list[index].isOpen)
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                 (homeState.list[index].isOpen)? homeState.list[index].desc:'OOPS!! NO DECRIPTION ADDED',
-                                  style: textStyles.openSansRegular
-                                      .copyWith(fontSize: 15),
-                                ),
-                              )
-                              
-
+                                  padding: const EdgeInsets.all(8.0),
+                                  child:FittedBox(
+                                      child: Text(
+                                        (homeState.list[index].isOpen)
+                                            ? homeState.list[index].desc.isEmpty
+                                                ? 'OOPS!! NO DECRIPTION ADDED'
+                                                : homeState.list[index].desc
+                                            : '',
+                                        style: textStyles.openSansRegular
+                                            .copyWith(fontSize: 15),
+                                      ),
+                                    ),
+                                  )
                           ],
                         ),
                         //Delete--PlayPause-Timer
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(5.0),
+                              padding: const EdgeInsets.only(
+                                  top: 5.0, left: 5, bottom: 5),
                               child: Text(
                                 homeState.list[index].duration
                                         .toStringAsFixed(0) +
@@ -332,7 +337,7 @@ class Home extends HookConsumerWidget {
                                   homeState.list[index].isPaused
                                       ? CupertinoIcons.play
                                       : CupertinoIcons.pause,
-                                  size: 30,
+                                  size: 22,
                                 )),
                             IconButton(
                                 onPressed: () {
@@ -432,8 +437,7 @@ class Home extends HookConsumerWidget {
     );
   }
 
-  void _startAddNewTransaction(
-      double valz,
+  void _startAddNewTodo(
       WidgetRef ref,
       HomeState state,
       ColorsState colors,
@@ -445,7 +449,7 @@ class Home extends HookConsumerWidget {
       FocusNode _titleFocus,
       FocusNode _descFocus) {
     final FocusScopeNode _node = FocusScopeNode();
-    double valz = 1;
+    // double valz = 1;
     showModalBottomSheet(
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -453,10 +457,8 @@ class Home extends HookConsumerWidget {
       context: ctx,
       builder: (_) {
         return Padding(
-          padding: MediaQuery.of(ctx).viewInsets,
-          child: StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            return GestureDetector(
+            padding: MediaQuery.of(ctx).viewInsets,
+            child: GestureDetector(
               onTap: () {
                 Navigator.of(ctx).pop();
               },
@@ -473,7 +475,6 @@ class Home extends HookConsumerWidget {
                         child: FocusScope(
                             node: _node,
                             child: textFields(
-                                valz,
                                 ref,
                                 state,
                                 colors,
@@ -489,15 +490,12 @@ class Home extends HookConsumerWidget {
                 ),
               ),
               behavior: HitTestBehavior.opaque,
-            );
-          }),
-        );
+            ));
       },
     );
   }
 
   Widget textFields(
-      double valz,
       WidgetRef ref,
       HomeState state,
       ColorsState colors,
@@ -561,13 +559,13 @@ class Home extends HookConsumerWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            slider(valz),
+            slider(),
             TextButton.icon(
                 onPressed: () {
                   if (key.currentState!.validate()) {
                     ref
                         .read(homeStateProvider.notifier)
-                        .addTodo(title.text, desc.text, valz);
+                        .addTodo(title.text, desc.text, val);
                     Navigator.of(ctx).pop();
                     title.clear();
                     desc.clear();
@@ -587,20 +585,23 @@ class Home extends HookConsumerWidget {
     );
   }
 
-  Widget slider(double valz) {
+  Widget slider() {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setState) {
         return Slider(
-          value: valz,
-          onChanged: (val) {
+          value: val,
+          onChanged: (value) {
             setState(() {
-              valz = val;
+              val = value;
+              print('valzzset $val');
             });
           },
           min: 1,
           max: 600,
-          divisions: 600,
-          label: valz.toStringAsFixed(2),
+          divisions: 20,
+          activeColor: Colors.blue,
+          inactiveColor: Colors.grey,
+          label: val.toStringAsFixed(2),
         );
       },
     );

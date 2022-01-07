@@ -3,15 +3,22 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:quicktodo/screens/authentication/login.dart';
 import 'package:quicktodo/screens/home/home.dart';
 
 import 'db/db.dart';
 
 final db = DB();
+bool login = false;
 void main() async {
   await db.initDatabase();
-
+  await isLogin;
   runApp(const ProviderScope(child: MyApp()));
+}
+
+Future<bool> get isLogin async {
+  login = await db.isLogin();
+  return login;
 }
 
 class MyApp extends HookWidget {
@@ -29,7 +36,7 @@ class MyApp extends HookWidget {
           //primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           brightness: Brightness.dark),
-      home: Home(),
+      home:login?Home():Login(),
     );
   }
 }

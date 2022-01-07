@@ -7,6 +7,7 @@ import 'hive_adapter/todo_type_define.dart';
 
 class DB {
   static late final Box<Todo> todoBox;
+  static late final Box todoLogin;
   Future<void> initDatabase() async {
     await Hive.initFlutter();
     Hive.registerAdapter(TodoAdapter());
@@ -23,6 +24,10 @@ class DB {
       'todo',
       encryptionCipher: HiveAesCipher(encryptionKey),
     );
+    todoLogin = await Hive.openBox(
+      'Login',
+      encryptionCipher: HiveAesCipher(encryptionKey),
+    );
   }
 
   void closeDatabase() async {
@@ -32,6 +37,15 @@ class DB {
 
   void clearDatabase() async {
     await todoBox.clear();
+  }
+
+  Future<void> storeUserCredentials(String? phoneNumber, String? passwd) async {
+    await todoLogin.putAll({'phNoLogin': phoneNumber, 'passwd': passwd});
+  }
+
+  Future<bool> isLogin() async {
+    final output = todoLogin.get('phNoLogin') != null;
+    return output;
   }
 
   List<Todo> getAllTodos() {

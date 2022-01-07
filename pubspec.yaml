@@ -42,10 +42,12 @@ flutter:
   fonts:
     - family: "OpenSansRegular"
       fonts:
-        - asset: lib/assets/fonts/OpenSans-Regular.ttf
+        - asset: assets/fonts/OpenSans-Regular.ttf
           weight: 400
 
     - family: "OrbitronRegular"
       fonts:
-        - asset: lib/assets/fonts/Orbitron-Regular.ttf
+        - asset: assets/fonts/Orbitron-Regular.ttf
           weight: 400
+  assets:
+    - ./assets/icons/login.png

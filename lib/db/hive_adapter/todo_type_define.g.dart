@@ -20,13 +20,16 @@ class TodoAdapter extends TypeAdapter<Todo> {
       title: fields[0] as String,
       desc: fields[1] as String,
       duration: fields[2] as double,
-    )..isPaused = fields[3] as bool;
+    )
+      ..isPaused = fields[3] as bool
+      ..isOpen = fields[4] as bool
+      ..status = fields[5] as String;
   }
 
   @override
   void write(BinaryWriter writer, Todo obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -34,7 +37,11 @@ class TodoAdapter extends TypeAdapter<Todo> {
       ..writeByte(2)
       ..write(obj.duration)
       ..writeByte(3)
-      ..write(obj.isPaused);
+      ..write(obj.isPaused)
+      ..writeByte(4)
+      ..write(obj.isOpen)
+      ..writeByte(5)
+      ..write(obj.status);
   }
 
   @override

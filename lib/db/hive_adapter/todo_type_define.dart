@@ -15,10 +15,10 @@ class Todo extends HiveObject {
   @HiveField(3)
   bool isPaused = true;
 
-  @HiveField(3)
+  @HiveField(4)
   bool isOpen = false;
 
-  @HiveField(4)
+  @HiveField(5)
   String status = 'TODO';
 
   Todo({

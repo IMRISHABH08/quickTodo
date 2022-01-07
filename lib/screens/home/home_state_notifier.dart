@@ -29,6 +29,7 @@ class HomeStateNotifier extends StateNotifier<HomeState> {
       desc: description ?? '',
       duration: duration,
     );
+    print('DURATIONNNN $duration');
     state = state.copyWith.call(isLoading: true);
     await db.addTodo(todo);
     loadTodos();
@@ -51,18 +52,20 @@ class HomeStateNotifier extends StateNotifier<HomeState> {
     late Timer _timer;
     var duration = state.list[index].duration;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (duration <= 0 || isPaused == true) {
-        timer.cancel();
+      if (isPaused == true || duration <= 0) {
+        _timer.cancel();
         if (duration <= 0) {
-          db.editTodo(index, isPaused, status: 'DONE', duration: 0);
+          db.editTodo(index, true, status: 'DONE', duration: 0);
         }
-        if (isPaused == true) {
+        if (isPaused == true && duration > 0) {
           db.editTodo(index, isPaused, status: 'ON-GOING');
         }
         loadTodos();
       } else {
         //Future.delayed(Duration(milliseconds: 500));
-        db.editTodo(index, isPaused, duration: duration, status: 'ON-GOING');
+        if (isPaused==false && duration > 0) {
+          db.editTodo(index, isPaused, duration: duration, status: 'ON-GOING');
+        }
         loadTodos();
         duration--;
       }
